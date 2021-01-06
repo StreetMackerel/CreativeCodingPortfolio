@@ -51,12 +51,30 @@
       <div class="row">
         <div class="col-lg mx-auto">
           <h2 class="text-white mb-4">Colour Wheel with 3D Noise</h2>
-            
-          <p class="text-white-50">Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.Generative Art.</p>
-
+          <div class="row">
+            <p class="col-6 text-white-50">This colour focused project is a tool used to display a variety of complimentary tones using formulas for calculating positions on the HSB colour wheel as values between 0 and 360.<br><br>
+              These effects are then built upon using colour interpolation
+              <br><br> This rings drawn in the tool were created using a triangle strip and colour interpolation. they display complimentary colours, analagous and tetradic.
+              <br><br>On the right is how these values were calculated base on the current selected color.</p>
+            <img class="col-6 img-fluid " src="img/colorCalcs.jpg" alt="">
+          </div>
+          <div class="row">
+            <p class="col-lg-6 text-white-50">
+            From this point the "Geneartive Art" component was built which takes the values held for selected colour and it's compliment and creates an animation using these two colours.
+              <br><br>The pattern created uses perlin noise to generate a value for each 2x2 pixel on the screen and assign it a value between zero and one. This value is them mapped to a value between the two selected colours with a steep 'cliff' and 'floor' the show only a short transition between the two.
+              <br><br>The code enabling this makes heavy use of the map function to control the colors. An example of perlin noise can be seen on the right.
+            </p>
+            <img class="col-lg-6 img-fluid " src="img/perlNoise.png" alt="">
+          </div>
+          <div class="row">
+            <p class="col-lg-6 text-white-50">
+            this kind of noise and the method of controlling it's cliffs and floors is commonly used in simulation environments to generate landmasses.
+              <br><br>The ability to manipulate these creates a controlled kind of randomness which can generate beautiful results.
+            </p>
+            <img class="col-lg-6 img-fluid " src="img/perlHair.png" alt="">
         </div>
-     
-        
+
+
         </div>
     </div>
   </section>
