@@ -10,7 +10,7 @@ let mod = 0;
 
 function setup(){
     createCanvas(windowWidth, windowHeight);
-    background(0);
+    background(255);
     opentype.load('data/BigBoy.otf', function(err, f){
         if(err){
             console.log(err);
@@ -27,16 +27,13 @@ function createWord(){
 
 function draw(){
     
-    background(255);
-    translate(20, 220);
     fill(0);
-    //noStroke();
     flag = false;
     mod = 0;
 
     if(x == -1){  //create shape array
     if(!font) return
-    fontPath = font.getPath('BB8 is jim Carrey %', 0, 0, 100);
+    fontPath = font.getPath('BB8 is jim Carrey', 40, 200, 75);
     path = new g.Path(fontPath.commands);
     //path = g.resampleByAmount(path, 1000);
     pathArray = path.commands;
@@ -47,8 +44,13 @@ function draw(){
            x = i;
         }
     }
-    }
 
+    drawMessage();
+    loadPixels();
+    
+    
+}
+    function drawMessage(){
     for(i = 0; i < shapeArray.length; i++){ // does not handle 'i' 'j' or '!'
         beginShape();
         for(j = 0; j < shapeArray[i].length; j++){
@@ -62,13 +64,14 @@ function draw(){
                 } else {
                     fill(255);
                     flag = true;
-            }
-        if(shapeArray[i][j].type == "C"){
-            curveVertex(shapeArray[i][j].x1, shapeArray[i][j].y1);
-            curveVertex(shapeArray[i][j].x2, shapeArray[i][j].y2);
-        }  else {
-                curveVertex(shapeArray[i][j].x, shapeArray[i][j].y);
                 }
+        if(shapeArray[i][j].type == "L" || shapeArray[i][j].type == "M"){
+            vertex(shapeArray[i][j].x, shapeArray[i][j].y);
+        }  else if(shapeArray[i][j].type == "C"){
+            bezierVertex(shapeArray[i][j].x1, shapeArray[i][j].y1,shapeArray[i][j].x2, shapeArray[i][j].y2, shapeArray[i][j].x, shapeArray[i][j].y);
+        } else if(shapeArray[i][j].type == "Q"){
+            quadraticVertex(shapeArray[i][j].x1, shapeArray[i][j].y1,shapeArray[i][j].x, shapeArray[i][j].y);
+        }
         }
         endShape(CLOSE);
         if(flag){
@@ -77,6 +80,8 @@ function draw(){
             mod = 0
         }
     }
+}
+    
 
     function MaxX(arr){
         let arr2 = [];
