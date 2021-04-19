@@ -52,7 +52,8 @@ var numPoints = 0.15;
 var lastNumPoints = 0.15;
 var splineWidth = 3;
 
-var gui,gui2;
+//UI vars
+var gui, bu, inp;
 
 function preload(){
     sound = loadSound('data/lofi.mp3');
@@ -86,7 +87,10 @@ function setup(){
 
     //create GUI
     createUI();
-    
+  
+    textAlign(CENTER);
+    textSize(50);
+
 
     background(255);
     opentype.load('data/VectFont.ttf', function(err, f){ // issues with A B D AND P 
@@ -112,7 +116,6 @@ function setup(){
     currFont = font;
     fontSelector();
     musicSelector();
-
 }
 
 function draw(){
@@ -295,7 +298,8 @@ function stepTowards(){
 }
 
 function newWord(){
-    let n = document.getElementById("newWord").value;
+   // let n = document.getElementById("newWord").value;
+   let n = inp.value();
     if(wordsCount==0){
         words[wordsCount]=n;
         words[wordsCount+1]=n;
@@ -518,6 +522,13 @@ function createUI(){
     gui.addGlobals('speed');
     sliderRange(0.5, 4, 0.1);
     gui.addGlobals('fontWeight');
+
+    inp = createInput();
+    inp.position(width - 250 , 10);
+  
+    bu = createButton('Add');
+    bu.position(inp.x + inp.width, 10);
+    bu.mousePressed(newWord);
 }
 
 let sel;
