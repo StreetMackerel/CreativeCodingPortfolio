@@ -13,16 +13,24 @@ let index = 0;
 let boxes = []
 let moving = false;
 let wordsIndex = 1;
-let words = ["EAT","sleep","RAVE","REPEAT","ALSO","SHOWER","AND","HYDRATE"];
+// let words = ["EAT","sleep","RAVE","REPEAT","ALSO","SHOWER","AND","HYDRATE"];
+let words = ["",""];
 let currentWord;
+let wordsCount = 0;
 let frameCount = 0;
 let staticArrayVal;
 let tempLetters = [];
 let tempTargets = [];
 let tl = false;
 let speed = 0.20;
+let interval = 500;
+let alpha = 25;
+let fSize = 10;
+let started = false;
 
 function setup(){
+    stroke(255);
+    strokeWeight(3);
     textAlign(CENTER);
     createCanvas(windowWidth, windowHeight);
     background(255);
@@ -36,26 +44,30 @@ function setup(){
 }
 
 function draw(){
-    fill(0,0,0);
-    background(255,255,255,50);
-    flag = false;
-    mod = 0;
-    currentWord = words[wordsIndex]
+    fill(255);
+    background(0,0,0,alpha);
+    if(started){
+        
+        flag = false;
+        mod = 0;
+        currentWord = words[wordsIndex]
 
-    if(first){  //create shape array
-    shapeArray = newArr(words[0]);
-    targetArray = newArr(words[wordsIndex]);
-    first = false;
-    }
+        if(first){  //create shape array
+        shapeArray = newArr(words[0]);
+        targetArray = newArr(words[wordsIndex]);
+        first = false;
+        start();
+        }
 
-    drawMessage();
+        drawLineMessage();
 
-    if(moving){
-        stepTowards();
+        if(moving){
+            stepTowards();
+        }
     }
 }
 
-function morph(){
+function start(){
     resizeArray();
     moving = true; 
 }
@@ -66,13 +78,13 @@ function drawMessage(){
         for(let j = 0; j < shapeArray[i].length; j++){
             if(i == 0){} // if no previous shape do nothing
                 else if(shapeArray[i][j].x > MaxX(shapeArray[i-mod-1])){
-                fill(0);
+                fill(255);
                 flag = false; // flag and mod handle letters with multiple holes such as 'B' and '8';
                 } else if (shapeArray[i][j].y < MinY(shapeArray[i-mod-1])){
-                    fill(0);
+                    fill(255);
                     flag = true;
                 } else {
-                    fill(255);
+                    fill(0);
                     flag = true;
                 }
         if(shapeArray[i][j].type == "L" || shapeArray[i][j].type == "M"){
@@ -97,13 +109,13 @@ function drawMessage(){
             for(let j = 0; j < tempLetters[i].length; j++){
                 if(i == 0){} // if no previous shape do nothing
                     else if(tempLetters[i][j].x > MaxX(shapeArray[i-mod-1])){
-                    fill(0);
+                    fill(255);
                     flag = false; // flag and mod handle letters with multiple holes such as 'B' and '8';
                     } else if (tempLetters[i][j].y < MinY(tempLetters[i-mod-1])){
-                        fill(0);
+                        fill(255);
                         flag = true;
                     } else {
-                        fill(255);
+                        fill(0);
                         flag = true;
                     }
             if(tempLetters[i][j].type == "L" || tempLetters[i][j].type == "M"){
@@ -168,7 +180,43 @@ function stepTowards(){
     }
 }
 
+function newWord(){
+    let n = document.getElementById("newWord").value;
+    if(wordsCount==0){
+        words[wordsCount]=n;
+        words[wordsCount+1]=n;
+    } else if(wordsCount == 1){
+        words[wordsCount]=n;
+    } else {
+        words.push(n);
+    }
+    
+    if(!started){
+        started = true;
+    }
+    wordsCount++;
+    n = "";
+}
 
+function newArr(w){
+    temp = []
+    flag = false;
+    fill(255);
+    fontPath = font.getPath(w, width/3, height/2+((width/fSize)/2), width/fSize);
+    path = new g.Path(fontPath.commands, {align : 'center'});
+    pathArray = path.commands;
+
+    for(let i = 0; i < pathArray.length; i++){
+        if(pathArray[i].type != "Z"){
+            //pathArray[i].vector = createVector(pathArray[i].x,pathArray[i].y);
+        } else {
+            temp.push(pathArray.slice(x+1, i)); // inserts range of shape
+            x = i;
+        }
+    }
+    x = -1;
+    return temp
+}
 
 function onArrive(){
     moving = false;
@@ -180,25 +228,29 @@ function onArrive(){
     } else {
         wordsIndex = 0;
         targetArray = newArr(words[wordsIndex]);
-        //reset();
-        //return;
     }
     targetArray = newArr(words[wordsIndex]);
 
-    morph();
+    setTimeout(() => {
+        start();
+    }, interval);
+    
 }
 
 function drawLineMessage(){
     for(let i = 0; i < shapeArray.length; i++){ //line drawing
         for(let j = 1; j < shapeArray[i].length; j++){
+                stroke(255);
+                strokeWeight(1);
                 line(shapeArray[i][j].x, shapeArray[i][j].y,shapeArray[i][j-1].x, shapeArray[i][j-1].y);
-                fill(255,0,0);
-                noStroke()
-                ellipse(shapeArray[i][j].x, shapeArray[i][j].y, 5, 5);
-                fill(0,0,0);
-                stroke(0);
-                strokeWeight(5);
+        }
+    }
 
+    if(tl){
+        for(let z = 0; z < tempLetters.length; z++){
+            for(let l = 1; l < tempLetters[z].length; l++){
+                line(tempLetters[z][l].x, tempLetters[z][l].y,tempLetters[z][l-1].x, tempLetters[z][l-1].y);
+            }
         }
     }
 }
@@ -252,25 +304,12 @@ function resizeArray(){
         //new word smaller
         let diff = shapeArray.length - targetArray.length;
         
-        for (let t = 0; t<diff; t++){
+        for (let t = 0; t<diff; t++){ // handles holding extra letters for moving
             tl = true;
             tempLetters.push([...shapeArray[shapeArray.length-(1+t)]]);
         }
 
-        // for(let z = 0; z < tempLetters.length; z++){
-        //     for(let l = 0; l < tempLetters[z].length; l++){
-                
-                
-
-        //         let r1 = Math.floor(random(0, targetArray.length-1)); //random existing letter
-        //         let r = Math.floor(random(1, targetArray[r1].length-1)); //random point in that letter
-
-        //         let ttarget = targetArray[r1][r];
-        //         tempTargets[0].push([ttarget]);
-        //     }
-        // }
-
-        shapeArray.length = targetArray.length;
+        shapeArray.length = targetArray.length; // cut array length down
 
         for(let j = 0; j < shapeArray.length; j++){ //for length of current word
             if (shapeArray[j].length>targetArray[j].length){ //if letter is larger than new letter in this pos
@@ -290,9 +329,10 @@ function resizeArray(){
                     shapeArray[j].splice(1, 0, newVertex); // insert point into array
                 }
             }
-            //additional letters
         }
             
+        //additional letters
+
         let iterations3 = targetArray.length-shapeArray.length; // run x additional times
 
             for(let i = iterations3; i > 0; i--){
@@ -311,32 +351,7 @@ function resizeArray(){
     }
 }
 
-function reset(){
-    wordsIndex = 1;
-    moving  = false;
-    shapeArray = newArr(words[0]);
-    targetArray = newArr(words[wordsIndex]); 
-}
 
-function newArr(w){
-    temp = []
-    flag = false;
-    fill(0);
-    fontPath = font.getPath(w, width/3, height/2, width/11);
-    path = new g.Path(fontPath.commands, {align : 'center'});
-    pathArray = path.commands;
-
-    for(let i = 0; i < pathArray.length; i++){
-        if(pathArray[i].type != "Z"){
-            //pathArray[i].vector = createVector(pathArray[i].x,pathArray[i].y);
-        } else {
-            temp.push(pathArray.slice(x+1, i)); // inserts range of shape
-            x = i;
-        }
-    }
-    x = -1;
-    return temp
-}
 https://stackoverflow.com/questions/16468124/count-values-of-the-inner-two-dimensional-array-javascript
 function totalPoints(arr){
     let s = 0;
